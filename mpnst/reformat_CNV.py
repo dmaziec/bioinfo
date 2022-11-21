@@ -22,9 +22,9 @@ def main(args):
             sep=",",
             names=[
                 "ID",
-                "chr",
-                "startpos",
-                "endpos",
+                "chromosome",
+                "start",
+                "end",
                 "total_normal",
                 "minor_normal",
                 "total_tumor",
@@ -35,16 +35,16 @@ def main(args):
         ascat_cnv["total_tumor"] = ascat_cnv["total_tumor"].astype(int)
         ascat_cnv["minor_tumor"] = ascat_cnv["minor_tumor"].astype(int)
 
-        ascat_cnv["nMajor"] = ascat_cnv["total_tumor"] - ascat_cnv["minor_tumor"]
+        ascat_cnv["major_cn"] = ascat_cnv["total_tumor"] - ascat_cnv["minor_tumor"]
         goscan_cnv = ascat_cnv[
-            ["chr", "startpos", "endpos", "total_tumor", "minor_tumor", "nMajor"]
+            ["chromosome", "start", "end", "total_tumor", "minor_tumor", "major_cn"]
         ]
         # change the order of columns
         goscan_cnv = goscan_cnv[
-            ["chr", "startpos", "endpos", "nMajor", "minor_tumor", "total_tumor"]
+            ["chromosome", "start", "end", "major_cn", "minor_tumor", "total_tumor"]
         ]
         goscan_cnv.rename(
-            columns={"minor_tumor": "nMinor", "total_tumor": "copyNumber"}, inplace=True
+            columns={"minor_tumor": "minor_cn", "total_tumor": "total_cn"}, inplace=True
         )
         final_folder = f"{output_folder}/{folder_name}"
         if os.path.exists(final_folder) != True:
