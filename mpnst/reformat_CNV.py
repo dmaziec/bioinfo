@@ -10,7 +10,7 @@ from datetime import datetime
 This script is to reformat output CNV data from ASCAT into the format compatible with GosCan 
 Under the provided directory (inputdir) files should be named with the suffix: .copynumber.caveman.csv
 Input directory will be searched recursively for the files and the files should be stored up to one level from the parent directory e.g. parentdir/ascat/out.copynumber.caveman.csv
-the results will stored under the CNV_goscan folder
+the results will be tored under the CNV_goscan folder
 """
 
 
@@ -20,7 +20,7 @@ def main(args):
 
     output_folder = f"CNV_goscan/{timestampStr}"
     if os.path.exists(output_folder) != True:
-        os.mkdir(output_folder)
+        os.makedirs(output_folder)
     path = args["inputdir"]
 
     for file_csv in glob.glob(f"{path}/**/*.copynumber.caveman.csv", recursive=True):
