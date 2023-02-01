@@ -70,7 +70,7 @@ def parse_germline_details(record, category, mutation_type):
         results["gene"] = gene.group()
         gene_end = gene.end()
         proteins = r[gene_end + 1 :].split(" ")[0]
-        results["protein_change"] = proteins
+        results["protein_mutation"] = proteins
         all_results += [results]
 
     return all_results
@@ -85,11 +85,11 @@ def main(args):
         os.makedirs(output_folder)
 
     mpnst_tsv_filtered = pandas.read_csv(
-        args["mpnst"],
-        sep="\t",
-        index_col=False).filter(
+        args["mpnst"], sep="\t", index_col=False
+    ).filter(
         regex="(^GeM_ID$)|(^sample$)|(^(germline)$)|(.*_somatic$)|(.*_germline$)|(.*_germline_detailed$)|(.*_somatic_minor_cn$)|(.*_somatic_total_cn$)",
-        axis=1)
+        axis=1,
+    )
 
     mpnst_tsv_filtered.drop(
         inplace=True,
@@ -114,12 +114,11 @@ def main(args):
             "ZC3H7_somatic_total_cn",
             "INI1_somatic",
             "INI1_somatic_minor_cn",
-            "INI1_somatic_total_cn"
-
+            "INI1_somatic_total_cn",
         ],
     )  # dropping these genes as I cant find them in cgap genes and they are empty, checked manually
 
-      # just set it to some number insetad of NaN
+    # just set it to some number insetad of NaN
     mpnst_genes_somatic = set(
         [
             col.split("_")[0]
@@ -135,9 +134,14 @@ def main(args):
         ]
     )
     mpnst_genes = set(list(mpnst_genes_somatic) + list(mpnst_genes_germline))
-    col_mino_total = [col for col in mpnst_tsv_filtered.columns if (col.endswith("_somatic_minor_cn") or col.endswith("_somatic_total_cn"))]
-    mpnst_tsv_filtered[col_mino_total] = mpnst_tsv_filtered[col_mino_total].fillna(value=-1000)       # just set it to some number insetad of NaN
-
+    col_mino_total = [
+        col
+        for col in mpnst_tsv_filtered.columns
+        if (col.endswith("_somatic_minor_cn") or col.endswith("_somatic_total_cn"))
+    ]
+    mpnst_tsv_filtered[col_mino_total] = mpnst_tsv_filtered[col_mino_total].fillna(
+        value=-1000
+    )  # just set it to some number insetad of NaN
 
     mpnst_tsv_dict = mpnst_tsv_filtered.to_dict(orient="records")
 
@@ -163,7 +167,7 @@ def main(args):
         for gene in mpnst_genes:
             results = {}
             # flag if add it to the results, only if we have a specified category or if category is missing we have homozygous deletion
-            
+
             if gene in mpnst_genes_somatic:
                 add = False
                 if int(sample[f"{gene}_somatic_minor_cn"]) == 0:
@@ -175,8 +179,8 @@ def main(args):
                     results["mutation_type"] = "homozygous deletion"
                     add = True
                 elif str(sample[f"{gene}_somatic"]) != "nan":
-                        results["mutation_type"] = sample[f"{gene}_somatic"]
-                        add = True
+                    results["mutation_type"] = sample[f"{gene}_somatic"]
+                    add = True
 
                 for key in mapping.keys():
                     if str(sample[f"{gene}_somatic"]) in key:
@@ -207,7 +211,7 @@ def main(args):
                             )
                             if details_parsed != None:
                                 results_final += details_parsed
-                            else: 
+                            else:
                                 results["category"] = category
                                 results["mutation_type"] = mutation_type
                                 results["gene"] = gene
