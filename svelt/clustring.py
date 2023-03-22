@@ -31,11 +31,12 @@ create_folder(missing_samples_folder)
 def create_reports(missing_samples_df, histology):
     report_file = open(f"{output_folder}/missing_samples_in_publication.txt", "a")
     missing_samples = open(f"{missing_samples_folder}/missing_samples.tsv", "a")
+    missing_samples_uuids = missing_samples_df["UUID"].tolist()
     # number of missing samples
-    number_of_samples_missing = len(missing_samples_df)
+    number_of_samples_missing = len(missing_samples_uuids)
 
     # list of missing samples UUIDs
-    list_of_missing_samples = ",".join(missing_samples_df["UUID"].tolist())
+    list_of_missing_samples = ",".join(missing_samples_uuids)
 
     # save it in the report file
     if number_of_samples_missing > 0:
@@ -108,6 +109,7 @@ def run_clustering(svelt_samples, pubication_samples):
 
         # run clustering only on a dataset with more than 2 samples
         if len(publication_data_subset) > 2:
+                
             # hierarchical algorithm and heat map
             cluster_map = sns.clustermap(
                 publication_data_subset,
@@ -116,6 +118,7 @@ def run_clustering(svelt_samples, pubication_samples):
                 yticklabels=publication_data.loc[publication_data_subset.index][
                     "UUID"
                 ].tolist(),  # uuids labels instead of indexes
+                #row_linkage=linkage(publication_data_subset, method='complete', optimal_ordering=True)
             )
 
             # save the dataframe on which we run the algorithm
