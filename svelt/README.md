@@ -7,8 +7,8 @@ In order to reproduce the results of the hierarchical clustering on the PCAWG sa
 The help command of the tool: 
 
 ```
-python3 clustring.py  --help 
-Usage: clustring.py [OPTIONS]
+python3 clustering.py  --help 
+Usage: clustering.py [OPTIONS]
 
   Run hierarchical clustering to organize PCAWG samples on SVELT.
 
