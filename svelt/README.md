@@ -1,6 +1,6 @@
 ## SVELT - PCAWG samples 
 
-In order to reproduce the results of the hierarchical clustering on the PCAWG samples uploaded on SVELT,  please run `clustering.py`.  The aim of the tool is to organize the PCAWG samples uploaded to the browser based on the patterns of rearrangement signatures to facilitate the process of structural variants interpretation. 
+In order to reproduce the results of the hierarchical clustering on the PCAWG samples uploaded on SVELT,  please run `clustering.py`.  The aim of the tool is to organize the PCAWG samples based on the patterns of rearrangement signatures to facilitate the process of structural variants interpretation. 
 
 ## CLI 
 
@@ -27,7 +27,7 @@ Options:
 |       Parameter|Description                 
 |----------------|-------------------------------|
 |`svelt_samples` | List of samples used as demo data for SVELT. Cancer type is defined in the `histology_abbreviation` column. Sample UUIDs are defined in the `UUID` column. This file is available in the `data` folder.      |
-|`publication_samples`          |  Patters of somatic rearrangements across cancers.  [ref:https://pubmed.ncbi.nlm.nih.gov/32118208/. The source is available under Supplementary Tables, Sheet 7]        |
+|`publication_samples`          |  Patters of somatic rearrangements across cancers.  [ref:https://pubmed.ncbi.nlm.nih.gov/32118208/. The source file is available under Supplementary Tables, Sheet 7]        |
 
 
 
