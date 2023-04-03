@@ -1,6 +1,7 @@
 ## SVELT - PCAWG samples 
 
-In order to reproduce the results of the hierarchical clustering on the PCAWG samples uploaded on SVELT,  please run `clustering.py`.  The aim of the tool is to organize the PCAWG samples based on the patterns of rearrangement signatures to facilitate the process of structural variants interpretation. 
+In order to reproduce the results of the hierarchical clustering on the PCAWG samples uploaded on SVELT,  please run `clustering.py`.  The aim of the tool is to organize the PCAWG samples based on the patterns of rearrangement signatures to facilitate the process of structural variants interpretation. The samples are clustered using the Euclidean metric as a distance measure.
+
 
 ## CLI 
 
