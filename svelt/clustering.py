@@ -29,7 +29,7 @@ def create_folder(folder_name):
 
 def create_reports(missing_samples_df, histology):
     """
-    Create a report of SVELT sample UUIDs that were not available in the PCAWG study.
+    Create a report of SVELT sample UUIDs that were not available in the variant patterns.
     Save the dataframe of the missing samples.
 
 
@@ -37,7 +37,7 @@ def create_reports(missing_samples_df, histology):
     :param histology: cancer type
     :return:
     """
-    report_file = open(f"{output_folder}/missing_samples_in_publication.txt", "a")
+    report_file = open(f"{output_folder}/missing_samples_in_patterns.txt", "a")
     missing_samples = open(f"{missing_samples_folder}/missing_samples.tsv", "a")
     missing_samples_uuids = missing_samples_df["UUID"].tolist()
 
@@ -51,7 +51,7 @@ def create_reports(missing_samples_df, histology):
     if number_of_samples_missing > 0:
         report_file.write(f"Histology: {histology}\n")
         report_file.write(
-            f"Number of samples available on SVELT but not available in the publication: {number_of_samples_missing}\n"
+            f"Number of samples available on SVELT but not available in the provided patterns: {number_of_samples_missing}\n"
         )
         report_file.write(f"UUIDs of the missing samples: {list_of_missing_samples} \n")
         report_file.write(f"{'#' * 50}\n")
@@ -66,10 +66,10 @@ def create_reports(missing_samples_df, histology):
 @click.command()
 @click.option("--svelt_samples", help="SVELT samples in CSV.")
 @click.option(
-    "--pubication_samples",
-    help="Publication samples in TSV. Source: https://www.nature.com/articles/s43018-020-0027-5 -- Supplementary Table -- Sheet 7",
+    "--patterns",
+    help="Patterns of somatic rearrangements across cancers in TSV.",
 )
-def run_clustering(svelt_samples, pubication_samples):
+def run_clustering(svelt_samples, patterns):
     """Run hierarchical clustering to organize PCAWG samples on SVELT."""
 
     # output folders
@@ -87,24 +87,23 @@ def run_clustering(svelt_samples, pubication_samples):
     )
 
     # load publication samples
-    publication_data = pandas.read_csv(pubication_samples, sep="\t", index_col=False)
+    patterns = pandas.read_csv(patterns, sep="\t", index_col=False)
 
     # get cancer types
     histology_abb = svelt_samples.histology_abbreviation.unique().tolist()
 
     # iterate over cancer types
     for his in histology_abb:
-
-        print(f"Run hierarchical clustering for {his}")
+        print(f"Annalyzing samples of {his}")
 
         # select svelt samples with the given cancer type
         svelt_cancer_subset = svelt_samples[
             svelt_samples["histology_abbreviation"] == his
-            ]
+        ]
 
         # get samples that are missing in the publication
         svelt_publication_missing = svelt_cancer_subset[
-            ~svelt_cancer_subset["UUID"].isin(publication_data.UUID.tolist())
+            ~svelt_cancer_subset["UUID"].isin(patterns.UUID.tolist())
         ]
 
         create_reports(svelt_publication_missing, his)
@@ -113,48 +112,49 @@ def run_clustering(svelt_samples, pubication_samples):
         svelt_uuids = svelt_cancer_subset.UUID.tolist()
 
         # narrow down publication data into svelt samples
-        pub_svelt_common_samples = publication_data[publication_data["UUID"].isin(svelt_uuids)]
+        pub_svelt_common_samples = patterns[patterns["UUID"].isin(svelt_uuids)]
 
         # drop UUIDs as we want to run clustering on a matrix of numbers
         cluster_data = pub_svelt_common_samples.drop("UUID", axis=1)
 
         # run clustering only on a dataset with more than 2 samples
         if len(cluster_data) > 2:
-
             cluster_map = sns.clustermap(
                 cluster_data,
                 cmap=sns.color_palette("crest", as_cmap=True),  # green colors
-                yticklabels=publication_data.loc[cluster_data.index][
+                yticklabels=patterns.loc[cluster_data.index][
                     "UUID"
                 ].tolist(),  # uuids labels instead of indexes
-
             )
 
-            
             lower_font = 0
             # samller labels font for big clusters
             if len(cluster_data) > 50:
                 # minimize based the size of the dataset
                 lower_font = 0.03 * len(cluster_data)
 
-            cluster_map.ax_heatmap.set_yticklabels( cluster_map.ax_heatmap.get_yticklabels(), fontdict={"fontsize": 8 - lower_font})
-            cluster_map.ax_heatmap.set_xticklabels( cluster_map.ax_heatmap.get_xticklabels(), fontdict={"fontsize": 8})
-            cluster_map.ax_heatmap.set_ylabel("Sample UUIDs")
+            cluster_map.ax_heatmap.set_yticklabels(
+                cluster_map.ax_heatmap.get_yticklabels(),
+                fontdict={"fontsize": 8 - lower_font},
+            )
+            cluster_map.ax_heatmap.set_xticklabels(
+                cluster_map.ax_heatmap.get_xticklabels(), fontdict={"fontsize": 8}
+            )
+            cluster_map.ax_heatmap.set_ylabel("Sample UUID")
             cluster_map.ax_heatmap.set_xlabel("Rearrangement type")
-            cluster_map.ax_heatmap.tick_params(axis="y",  width=0.5)
-            cluster_map.figure.suptitle(f"Cluster heatmap for {his}")
+            cluster_map.ax_heatmap.tick_params(axis="y", width=0.5)
+            cluster_map.figure.suptitle(
+                f"Clustering of structural variant patterns of samples of {his}."
+            )
 
             # save the dataframe on which we run the algorithm
-            publication_data[
-                publication_data["UUID"].isin(svelt_uuids)
-            ].to_csv(f"{dataframes_folder}/{his}.csv", index=False)
-
-    
+            patterns[patterns["UUID"].isin(svelt_uuids)].to_csv(
+                f"{dataframes_folder}/{his}.csv", index=False
+            )
 
             cluster_map.savefig(f"{heatmap_folder}/{his}.pdf")
-            plt.clf()
+            plt.close()
 
-            
             f = open(f"{clusters_folder}/{his}.txt", "a")
             for index in cluster_map.dendrogram_row.reordered_ind:
                 # write the reordered UUIDs
@@ -164,7 +164,6 @@ def run_clustering(svelt_samples, pubication_samples):
             f = open(f"{clusters_folder}/not_clustered_datasets.txt", "a")
             f.write(f"{his}\n")
             f.close()
-
 
 if __name__ == "__main__":
     run_clustering()
