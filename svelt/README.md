@@ -5,8 +5,13 @@ In order to reproduce the results of the hierarchical clustering on the PCAWG sa
 
 ## Dependencies
 
-**Python version**: 3.7.0 
-**Packages**: click, pandas, matplotlib, seaborn
+**Python version**: 3.7.0
+
+**Packages**:
+- click==8.1.3
+- pandas==1.1.5
+- matplotlib==3.5.3
+- seaborn==0.12.2
 
 ## CLI 
 
@@ -24,6 +29,11 @@ Options:
   --help                     Show this message and exit.
 ``` 
 
+Example usage:
+
+```
+python3 clustering.py --svelt_samples data/svelt_samples.csv --patterns data/patterns.csv
+```
 
 ## Input files
 
@@ -35,6 +45,8 @@ Options:
 
 
 ## Output files
+
+All the output results will be stored in the `SVELT_clustering/` folder. 
 
 |Output                                | Description                                                                                                                                                                                                      |
 |--------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
