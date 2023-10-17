@@ -40,11 +40,11 @@ def generate_command(args):
             extension = processed_file_data[0]['file_format']['display_title']
             output_file_name = processed_file_data[0]["href"].split("/")[-1]
             files[individual_display_title][
-                f"{tissue_type}_{extension}"] = f'curl -L {portal_url}{processed_file_data[0]["href"]} --user "{ff_key_key}:{ff_key_secret}" -o {output_file_name}'
-
+                f"{tissue_type}_{extension}"] = f'curl -L {portal_url}{processed_file_data[0]["href"]} --user "$DBMI_key:$DBMI_password" -o {output_file_name}'
+            files[individual_display_title][f"{tissue_type}_bam_sample_ID"] = s['bam_sample_id']
             if 'extra_files' in processed_file_data[0].keys():
                 output_file_name = processed_file_data[0]["extra_files"][0]["href"].split("/")[-1]
-                files[individual_display_title][f"{tissue_type}_{extension}_extra_file"] = f'curl -L {portal_url}{processed_file_data[0]["extra_files"][0]["href"]} --user "{ff_key_key}:{ff_key_secret}" -o {output_file_name}'
+                files[individual_display_title][f"{tissue_type}_{extension}_extra_file"] = f'curl -L {portal_url}{processed_file_data[0]["extra_files"][0]["href"]} --user "$DBMI_key:$DBMI_password" -o {output_file_name}'
 
     sa_project = ff_utils.search_metadata(
             f"search/?type=SomaticAnalysis&project.display_title={args['project']}",
@@ -59,11 +59,11 @@ def generate_command(args):
 
                     output_file_name = processed_files["href"].split("/")[-1]
                     files[individual_display_title][file[
-                        'workflow_argument_name']] = f'curl -L {portal_url}{processed_files["href"]} --user "{ff_key_key}:{ff_key_secret}" -o {output_file_name}'
+                        'workflow_argument_name']] = f'curl -L {portal_url}{processed_files["href"]} --user "$DBMI_key:$DBMI_password" -o {output_file_name}'
                     if 'extra_files' in processed_files.keys():
                         output_file_name = processed_files["extra_files"][0]["href"].split("/")[-1]
                         files[individual_display_title][
-                            f"{file['workflow_argument_name']}_extra_file"] = f'curl -L {portal_url}{processed_files["extra_files"][0]["href"]} --user "{ff_key_key}:{ff_key_secret}" -o {output_file_name}'
+                            f"{file['workflow_argument_name']}_extra_file"] = f'curl -L {portal_url}{processed_files["extra_files"][0]["href"]} --user "$DBMI_key:$DBMI_password" -o {output_file_name}'
 
 
     pd.DataFrame.from_dict(files.values()).to_csv(args["output"], index=False, sep ="\t")
