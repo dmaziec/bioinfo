@@ -6,6 +6,7 @@ This script implements the following steps:
 1. Alignment (bwa-mem)
 2. Adding Read Groups
 3. Marking duplicates
+4. BQSR
 
 
 Input parameters:

@@ -85,4 +85,10 @@ if [ "$force_rerun" = "true" ] || ! [ -f deduped.bam ]; then
   { echo "Error in Sentieon Dedup" && rm -f deduped.bam && exit 1; }
 fi
 
+echo "Running Sentieon QualCal"
+if ! [ -f recalibrated.bam ]; then
+  /n/data1/hms/dbmi/park/dominika/testing/tg_paper/scripts/sentieon_QualCal.sh deduped.bam $reference_genome $known_sites_dbsnp $known_sites_indel || \
+  { echo "Error in Sentieon QualCal" && rm -f recalibrated.bam && exit 1; }
+fi
+
 echo "END"
